@@ -1,7 +1,6 @@
 import express from 'express'
 import "dotenv/config";
 import cors from 'cors'
-import http from 'http'
 import { connectDB } from './lib/db.js';
 import userRouter from './routes/userRoutes.js';
 import messageRouter from './routes/messageRoutes.js';
@@ -9,7 +8,12 @@ import {Server} from 'socket.io'
 
 // create the express app and the http server
 const app = express();
-const server = http.createServer(app)
+
+const server = app.listen(process.env.PORT || 10000, () => {
+  console.log("Server running");
+});
+
+
 
 // Initialize socket.io server
 export const io = new Server(server , {
@@ -51,11 +55,7 @@ app.use("/api/messages" , messageRouter)
 // connect ot mongodb
  await connectDB();
 
- const PORT = process.env.PORT || 5000;
 
-server.listen(PORT, () => {
-  console.log("Server running on PORT:", PORT);
-});
 
 // const PORT = process.env.PORT || 5000;
 // server.listen(PORT ,()=>console.log("Server is running on PORT: : " + PORT))
