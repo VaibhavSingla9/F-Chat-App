@@ -57,21 +57,26 @@ export const ChatProvider = ({children})=>{
         }
     }
 
-    // funtion to subscribe to messages for selected user
-    const subscribeToMessages = async()=>{
-        if(!socket) return
-        socket.on("newMessage" , (newMessage)=>{
-            if(selectedUser && newMessage.senderId === selectedUser._id){
-                newMessage.seen = true
-                setMessages((prevMessages)=>[...prevMessages , newMessage]);
-                axios.put(`/api/messages/mark/${newMessage._id}`)
-            }else{
-                setUnseenMessages((prevUnseenMessages)=>({
-                    ...prevUnseenMessages , [newMessage.senderId] : prevUnseenMessages[newMessage.senderId] ? prevUnseenMessages[newMessage.senderId] + 1 : 1
-                }))
-            }
-        })
+  const subscribeToMessages = ()=>{
+  if(!socket) return;
+
+  socket.off("newMessage"); // REMOVE OLD FIRST
+
+  socket.on("newMessage", (newMessage)=>{
+    if(selectedUser && newMessage.senderId === selectedUser._id){
+      newMessage.seen = true;
+      setMessages(prev => [...prev, newMessage]);
+      axios.put(`/api/messages/mark/${newMessage._id}`);
+    }else{
+      setUnseenMessages(prev => ({
+        ...prev,
+        [newMessage.senderId]: prev[newMessage.senderId]
+          ? prev[newMessage.senderId] + 1
+          : 1
+      }));
     }
+  });
+};
 
     // function to unsubscribe from messages
     const unsubscribeFromMessages = ()=>{
@@ -88,7 +93,7 @@ export const ChatProvider = ({children})=>{
     const value={
         messages , 
         users , selectedUser , getUsers , getMessages , sendMessage , setSelectedUser , 
-        unseenMessages , setUnseenMessages
+        unseenMessages , setUnseenMessages ,socket
     }
 
 

@@ -100,35 +100,42 @@ export const checkAuth = (req,res)=>{
 // function using that user can update their profile 
 
 export const updateProfile = async(req,res)=>{
-    try{
-        const {profilePic , bio , fullName} = req.body
+ try{
+  const {profilePic , bio , fullName} = req.body
+  const userId = req.user._id
 
-        const userId = req.user._id
+  let updatedUser;
 
-        let updatedUser;
+  if(!profilePic){
+    updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { bio, fullName },
+      { new:true }
+    );
+  }else{
+    const upload = await cloudinary.uploader.upload(profilePic);
 
-        // when the profil pic is not provided 
-        if(!profilePic){
-            updatedUser = await User.findByIdAndUpdate(userId, {bio , fullName} , {new:true})
-        }else{
-            // if the profile pic is provided then upload it in the cloudinary from where we will get the URL
-            const upload = await cloudinary.uploader.upload(profilePic)
+    updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { profilePic: upload.secure_url, bio, fullName },
+      { new:true }
+    );
+  }
 
-            updatedUser = await User.findByIdAndUpdate(userId , {profilePic : upload.secure_url, bio, fullName} , {new:true})
+  // ✅ SEND RESPONSE FOR BOTH CASES
+  res.json({
+    success:true,
+    user:updatedUser
+  });
 
-            res.json({
-                success: true,
-                user:updatedUser
-            })
-        }
-    }catch(error){
-        console.log(error.message)
-         res.json({
-                success: false,
-                message:error.message
-            })
-    }
-}
+ }catch(error){
+  console.log(error.message);
+  res.json({
+    success:false,
+    message:error.message
+  });
+ }
+};
 
 
 

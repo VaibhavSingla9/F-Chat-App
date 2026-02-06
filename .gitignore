@@ -1,15 +1,2 @@
 # Node
-node_modules/
-npm-debug.log
-yarn-error.log
-.env
-
-# builds
-dist/
-build/
-
-# OS / editor
-.DS_Store
-.vscode/
-*.exe
-*.log
+node_modules
