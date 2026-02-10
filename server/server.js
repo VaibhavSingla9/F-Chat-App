@@ -6,6 +6,13 @@ import userRouter from './routes/userRoutes.js';
 import messageRouter from './routes/messageRoutes.js';
 import {Server} from 'socket.io'
 
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// ES Modules fix for __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 // create the express app and the http server
 const app = express();
 
@@ -47,7 +54,7 @@ app.use(express.json({limit:"4mb"}))
 app.use(cors())
 
 // Route Setup
-app.use("/", (req,res)=>{
+app.get("/", (req,res)=>{
     res.send("Server is liveeeeee!!!!")
 })
 app.use("/api/status" ,(req,res)=>res.send("Server is live") )
