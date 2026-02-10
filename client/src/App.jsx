@@ -10,8 +10,11 @@ import { AuthContext } from '../context/AuthContext'
 const  App = ()=> {
 
   const {authUser} = useContext(AuthContext)
+   console.log("BACKEND:", import.meta.env.VITE_BACKEND_URL);
   return (
     <div className='bg-[url("/bgImage.svg")] bg-contain'>
+     
+
       <Toaster/>
       <Routes>
         <Route path="/" element={authUser ? <HomePage/> : <Navigate to="/login"/>}/>
